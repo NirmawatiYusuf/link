@@ -1,7 +1,8 @@
 "use client";
 
-import { Folder, Inbox, LogOut, Plus, Tag, Trash2 } from "lucide-react";
+import { Folder, Inbox, LogOut, Plus, Settings, Tag, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useState } from "react";
 import type { CollectionView } from "@/lib/client-api";
 import { Button } from "@/components/ui/button";
@@ -173,6 +174,14 @@ export function Sidebar({
       )}
 
       <div className="mt-auto">
+        <Link
+          href="/settings"
+          className="flex h-9 w-full items-center gap-2 rounded-md px-2 text-sm text-muted transition-colors hover:bg-surface hover:text-foreground"
+          onClick={() => onSelectCollection(null)}
+        >
+          <Settings className="h-4 w-4" aria-hidden />
+          {t("settings")}
+        </Link>
         <Button variant="ghost" className="w-full justify-start" onClick={onLogout}>
           <LogOut className="h-4 w-4" />
           {t("logout")}

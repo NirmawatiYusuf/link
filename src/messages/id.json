@@ -59,6 +59,7 @@
     "itemCount": "{count} item",
     "errorUnknown": "Terjadi kesalahan.",
     "logout": "Keluar",
+    "settings": "Pustaka",
     "menu": "Menu"
   },
   "viewer": {
@@ -68,5 +69,17 @@
     "timeout": "Pratinjau memakan waktu lama — buka di browser Anda.",
     "openBrowser": "Buka di Browser",
     "close": "Tutup"
+  },
+  "settings": {
+    "title": "Pustaka",
+    "language": "Bahasa",
+    "theme": "Tema",
+    "themeDark": "Gelap",
+    "password": "Ubah kata sandi",
+    "currentPassword": "Kata sandi sekarang",
+    "newPassword": "Kata sandi baru",
+    "passwordHint": "Minimum 8 karakter.",
+    "changePassword": "Ubah kata sandi",
+    "saved": "Disimpan."
   }
 }

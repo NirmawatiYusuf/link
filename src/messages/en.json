@@ -59,6 +59,7 @@
     "itemCount": "{count} items",
     "errorUnknown": "Something went wrong.",
     "logout": "Log out",
+    "settings": "Settings",
     "menu": "Menu"
   },
   "viewer": {
@@ -68,5 +69,17 @@
     "timeout": "Preview is taking a while — open it in your browser instead.",
     "openBrowser": "Open in Browser",
     "close": "Close"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "themeDark": "Dark",
+    "password": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "passwordHint": "At least 8 characters.",
+    "changePassword": "Change password",
+    "saved": "Saved."
   }
 }
