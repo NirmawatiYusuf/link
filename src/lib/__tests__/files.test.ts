@@ -32,8 +32,8 @@ describe("local file store", () => {
   it("neutralizes traversal in upload paths and rejects traversal on read/delete", async () => {
     // Upload sanitizes the path prefix so nothing escapes the store root.
     const uploaded = await store.upload(new Uint8Array(0), "text/plain", { path: "../../evil" });
-    expect(uploaded.key).toMatch(/^-evil-/);
     expect(uploaded.key).not.toContain("/");
+    expect(uploaded.key).not.toContain("..");
 
     // read/delete go through the strict resolve() guard.
     await expect(store.read("../secret")).rejects.toThrow();
