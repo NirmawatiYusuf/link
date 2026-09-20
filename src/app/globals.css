@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root {
+  /* LinkForge dark neutral palette (SPEC.md §3.5) */
+  --background: #0d0f12;
+  --surface: #16191e;
+  --border: #262a33;
+  --foreground: #f3f4f6;
+  --muted: #9ca3af;
+  --accent: #f59e0b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
