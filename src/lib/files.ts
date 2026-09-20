@@ -55,7 +55,8 @@ export class LocalDiskFileStore implements FileStore {
 
   /** Local references are already app URLs (`/api/files/...`); return as-is. */
   async getUrl(key: string): Promise<string | null> {
-    return (await this.exists(this.toPath(key))) ? key : null;
+    const ref = key.startsWith("/api/files/") ? key : `/api/files/${key.replaceAll(sep, "/")}`;
+    return (await this.exists(this.toPath(ref))) ? ref : null;
   }
 
   async delete(key: string): Promise<void> {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
+import { RegisterServiceWorker } from "@/components/pwa/register-sw";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,6 +18,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "LinkForge",
   description: "Personal link & knowledge manager",
+  applicationName: "LinkForge",
+  manifest: "/manifest.webmanifest",
+  themeColor: "#0d0f12",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "LinkForge",
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -28,6 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <RegisterServiceWorker />
       </body>
     </html>
   );

@@ -8,6 +8,13 @@ export const objectIdSchema = z
 
 export const itemTypeSchema = z.enum(["link", "note", "file"]);
 
+const httpUrlSchema = z
+  .url()
+  .max(2048)
+  .refine((value) => /^https?:\/\//i.test(value), {
+    message: "Only http(s) URLs are allowed",
+  });
+
 const tagsSchema = z
   .array(z.string().trim().min(1).max(40))
   .max(20)
@@ -24,7 +31,7 @@ const baseItemFields = {
 export const createItemSchema = z.discriminatedUnion("type", [
   z.strictObject({
     type: z.literal("link"),
-    url: z.url().max(2048),
+    url: httpUrlSchema,
     ...baseItemFields,
   }),
   z.strictObject({
@@ -38,7 +45,7 @@ export const updateItemSchema = z
   .strictObject({
     title: z.string().trim().min(1).max(200).optional(),
     description: z.string().trim().max(2000).nullable().optional(),
-    url: z.url().max(2048).optional(),
+    url: httpUrlSchema.optional(),
     body: z.string().min(1).max(100_000).optional(),
     collectionId: objectIdSchema.nullable().optional(),
     tags: tagsSchema,
