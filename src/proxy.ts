@@ -1,9 +1,5 @@
-import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
-import { routing } from "@/i18n/routing";
 import { hasValidSession } from "@/lib/auth";
-
-const intlMiddleware = createMiddleware(routing);
 
 const PUBLIC_API = new Set(["/api/gate/login", "/api/gate/logout", "/api/health"]);
 
@@ -25,13 +21,13 @@ export async function proxy(request: NextRequest) {
     if (authenticated) {
       return NextResponse.redirect(new URL("/", request.url));
     }
-    return intlMiddleware(request);
+    return NextResponse.next();
   }
 
   if (!authenticated) {
     return NextResponse.redirect(new URL("/gate", request.url));
   }
-  return intlMiddleware(request);
+  return NextResponse.next();
 }
 
 export const config = {

@@ -35,7 +35,7 @@ Vercel Blob (files) · pnpm
 | --- | --- | --- |
 | `MONGODB_URI` | yes* | Atlas/Mongo connection string (*needed for content APIs) |
 | `MONGODB_DB` | no | Database name (default: `linkforge`) |
-| `GATE_PASSWORD_HASH` | yes* | bcrypt hash of the gate password (`bcryptjs.hashSync(pw, 12)`); settings-doc value overrides it |
+| `GATE_PASSWORD_HASH` | yes* | bcrypt hash of the gate password (`bcryptjs.hashSync(pw, 12)`); escape `$` as `\$` in `.env`; settings-doc value overrides it |
 | `SESSION_SECRET` | yes | JWT signing secret (`openssl rand -base64 48`) |
 | `BLOB_READ_WRITE_TOKEN` | no | Vercel Blob token; unset → files stored in `.local-blob/` (dev) |
 | `LOGIN_RATE_LIMIT` / `LOGIN_RATE_WINDOW_SECONDS` | no | Login throttling per IP (defaults: 5 / 60) |

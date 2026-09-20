@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
@@ -15,7 +15,7 @@ describe("local file store", () => {
   it("uploads, resolves, and deletes files with content types", async () => {
     const text = new TextEncoder().encode("hello");
     const uploaded = await store.upload(text, "text/plain", { path: "notes" });
-    expect(uploaded.key).toContain("notes/");
+    expect(uploaded.key).toMatch(/^notes-/);
     expect(uploaded.contentType).toBe("text/plain");
     expect(uploaded.size).toBe(5);
     expect(await store.getUrl(uploaded.key)).toBe(uploaded.url);
@@ -29,8 +29,14 @@ describe("local file store", () => {
     expect(await store.read(uploaded.key)).toBeNull();
   });
 
-  it("rejects path traversal keys", async () => {
-    await expect(store.upload(new Uint8Array(0), "text/plain", { path: "../evil" })).rejects.toThrow();
-    await expect(store.upload(new Uint8Array(0), "text/plain", { path: "/etc/passwd" })).rejects.toThrow();
+  it("neutralizes traversal in upload paths and rejects traversal on read/delete", async () => {
+    // Upload sanitizes the path prefix so nothing escapes the store root.
+    const uploaded = await store.upload(new Uint8Array(0), "text/plain", { path: "../../evil" });
+    expect(uploaded.key).toMatch(/^-evil-/);
+    expect(uploaded.key).not.toContain("/");
+
+    // read/delete go through the strict resolve() guard.
+    await expect(store.read("../secret")).rejects.toThrow();
+    await expect(store.delete("/etc/passwd")).rejects.toThrow();
   });
 });

@@ -5,16 +5,15 @@ type Ctx = { params: Promise<{ key: string }> };
 
 export async function GET(_request: Request, ctx: Ctx) {
   const { key } = await ctx.params;
-  // Vercel Blob serves its own public URLs; this route only backs local dev.
   if (!(fileStore instanceof LocalDiskFileStore)) {
-    return new NextResponse(null, { status: 404 });
+    return NextResponse.json({ error: { code: "NOT_FOUND", message: "File not found" } }, { status: 404 });
   }
   const file = await fileStore.read(key);
+  console.log("[files-route] read:", file === null ? "null" : `ok(${file.data.byteLength}b)`);
   if (!file) {
-    return new NextResponse(null, { status: 404 });
+    return NextResponse.json({ error: { code: "NOT_FOUND", message: "File not found" } }, { status: 404 });
   }
-  const body = file.data.buffer as ArrayBuffer;
-  return new NextResponse(new Blob([body]), {
+  return new NextResponse(Buffer.from(file.data), {
     headers: {
       "Content-Type": file.contentType,
       "Cache-Control": "private, no-store",

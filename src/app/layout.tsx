@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -20,12 +20,15 @@ export const metadata: Metadata = {
   description: "Personal link & knowledge manager",
   applicationName: "LinkForge",
   manifest: "/manifest.webmanifest",
-  themeColor: "#0d0f12",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "LinkForge",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0d0f12",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

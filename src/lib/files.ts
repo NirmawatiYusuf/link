@@ -40,7 +40,9 @@ export class LocalDiskFileStore implements FileStore {
     contentType: string,
     options: { path?: string } = {},
   ): Promise<StoredFile> {
-    const key = `${options.path ?? "uploads"}/${randomUUID()}`;
+    // Single path segment so the /api/files/[key] route can match the reference.
+    const prefix = (options.path ?? "uploads").replace(/[^\w-]/g, "-");
+    const key = `${prefix}-${randomUUID()}`;
     const target = this.resolve(key);
     await mkdir(dirname(target), { recursive: true });
     await writeFile(target, data);
