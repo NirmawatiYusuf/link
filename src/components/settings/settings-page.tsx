@@ -2,6 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/client-api";
 import { Button } from "@/components/ui/button";
@@ -69,9 +70,9 @@ export function SettingsPageClient() {
   return (
     <div className="flex min-h-dvh flex-col bg-background text-foreground">
       <header className="flex h-12 items-center gap-2 border-b border-border px-4">
-        <a href="/" className="text-sm text-muted hover:text-foreground">
+        <Link href="/" className="rounded p-1 text-muted hover:bg-surface hover:text-foreground">
           ←
-        </a>
+        </Link>
         <h1 className="text-sm font-semibold">{t("title")}</h1>
       </header>
 
