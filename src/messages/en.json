@@ -1,0 +1,19 @@
+{
+  "gate": {
+    "heading": "Welcome back",
+    "subtitle": "Enter your passcode to open your library.",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "unlock": "Unlock",
+    "errorWrong": "Incorrect password. Please try again.",
+    "errorRateLimited": "Too many attempts. Please wait a moment.",
+    "errorServer": "Something went wrong. Please try again."
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Something went wrong.",
+    "retry": "Retry"
+  }
+}

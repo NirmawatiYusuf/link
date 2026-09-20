@@ -1,0 +1,19 @@
+{
+  "gate": {
+    "heading": "Selamat datang kembali",
+    "subtitle": "Masukkan kode akses untuk membuka pustaka Anda.",
+    "passwordLabel": "Kata sandi",
+    "passwordPlaceholder": "Masukkan kata sandi",
+    "showPassword": "Tampilkan kata sandi",
+    "hidePassword": "Sembunyikan kata sandi",
+    "unlock": "Buka",
+    "errorWrong": "Kata sandi salah. Coba lagi.",
+    "errorRateLimited": "Terlalu banyak percobaan. Tunggu sebentar.",
+    "errorServer": "Terjadi kesalahan. Coba lagi."
+  },
+  "common": {
+    "loading": "Memuat…",
+    "error": "Terjadi kesalahan.",
+    "retry": "Coba lagi"
+  }
+}
