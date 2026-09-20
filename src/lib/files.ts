@@ -44,6 +44,7 @@ export class LocalDiskFileStore implements FileStore {
     const target = this.resolve(key);
     await mkdir(dirname(target), { recursive: true });
     await writeFile(target, data);
+    await writeFile(`${target}.meta`, JSON.stringify({ contentType }));
     return {
       key,
       url: `/api/files/${key.replaceAll(sep, "/")}`,
@@ -59,6 +60,7 @@ export class LocalDiskFileStore implements FileStore {
   async delete(key: string): Promise<void> {
     try {
       await unlink(this.resolve(key));
+      await unlink(`${this.resolve(key)}.meta`);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
         throw error;
@@ -70,7 +72,13 @@ export class LocalDiskFileStore implements FileStore {
   async read(key: string): Promise<{ data: Uint8Array; contentType: string } | null> {
     const target = this.resolve(key);
     try {
-      return { data: new Uint8Array(await readFile(target)), contentType: "application/octet-stream" };
+      let contentType = "application/octet-stream";
+      try {
+        contentType = (JSON.parse(await readFile(`${target}.meta`, "utf8")) as { contentType: string }).contentType;
+      } catch {
+        // missing/corrupt sidecar — fall back to the generic type
+      }
+      return { data: new Uint8Array(await readFile(target)), contentType };
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") {
         return null;
