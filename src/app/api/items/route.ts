@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
         collectionId,
         note: note || null,
         canEmbed: "unknown",
-        fileRef: stored.key,
+        fileRef: stored.url,
         fileType: file.type,
         createdAt: now,
         updatedAt: now,

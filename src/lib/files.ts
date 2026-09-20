@@ -53,14 +53,15 @@ export class LocalDiskFileStore implements FileStore {
     };
   }
 
+  /** Local references are already app URLs (`/api/files/...`); return as-is. */
   async getUrl(key: string): Promise<string | null> {
-    return (await this.exists(key)) ? `/api/files/${key.replaceAll(sep, "/")}` : null;
+    return (await this.exists(this.toPath(key))) ? key : null;
   }
 
   async delete(key: string): Promise<void> {
     try {
-      await unlink(this.resolve(key));
-      await unlink(`${this.resolve(key)}.meta`);
+      await unlink(this.resolve(this.toPath(key)));
+      await unlink(`${this.resolve(this.toPath(key))}.meta`);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
         throw error;
@@ -70,7 +71,7 @@ export class LocalDiskFileStore implements FileStore {
 
   /** Serve path for the local route: returns null when the file is missing. */
   async read(key: string): Promise<{ data: Uint8Array; contentType: string } | null> {
-    const target = this.resolve(key);
+    const target = this.resolve(this.toPath(key));
     try {
       let contentType = "application/octet-stream";
       try {
@@ -89,7 +90,7 @@ export class LocalDiskFileStore implements FileStore {
 
   private async exists(key: string): Promise<boolean> {
     try {
-      await stat(this.resolve(key));
+      await stat(this.resolve(this.toPath(key)));
       return true;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") {
@@ -97,6 +98,11 @@ export class LocalDiskFileStore implements FileStore {
       }
       throw error;
     }
+  }
+
+  /** Accepts raw keys and full `/api/files/...` references. */
+  private toPath(key: string): string {
+    return key.startsWith("/api/files/") ? key.slice("/api/files/".length) : key;
   }
 
   /** Normalize and confine keys under the store root (no path traversal). */
@@ -134,6 +140,9 @@ export class VercelBlobFileStore implements FileStore {
   }
 
   async getUrl(key: string): Promise<string | null> {
+    if (/^https?:\/\//.test(key)) {
+      return key;
+    }
     try {
       return (await head(key)).url;
     } catch (error) {
