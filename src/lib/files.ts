@@ -40,10 +40,13 @@ export class LocalDiskFileStore implements FileStore {
     contentType: string,
     options: { path?: string } = {},
   ): Promise<StoredFile> {
-    const key = `${options.path ?? "uploads"}/${randomUUID()}`;
+    // Single path segment so the /api/files/[key] route can match the reference.
+    const prefix = (options.path ?? "uploads").replace(/[^\w-]/g, "-");
+    const key = `${prefix}-${randomUUID()}`;
     const target = this.resolve(key);
     await mkdir(dirname(target), { recursive: true });
     await writeFile(target, data);
+    await writeFile(`${target}.meta`, JSON.stringify({ contentType }));
     return {
       key,
       url: `/api/files/${key.replaceAll(sep, "/")}`,
@@ -52,13 +55,16 @@ export class LocalDiskFileStore implements FileStore {
     };
   }
 
+  /** Local references are already app URLs (`/api/files/...`); return as-is. */
   async getUrl(key: string): Promise<string | null> {
-    return (await this.exists(key)) ? `/api/files/${key.replaceAll(sep, "/")}` : null;
+    const ref = key.startsWith("/api/files/") ? key : `/api/files/${key.replaceAll(sep, "/")}`;
+    return (await this.exists(this.toPath(ref))) ? ref : null;
   }
 
   async delete(key: string): Promise<void> {
     try {
-      await unlink(this.resolve(key));
+      await unlink(this.resolve(this.toPath(key)));
+      await unlink(`${this.resolve(this.toPath(key))}.meta`);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
         throw error;
@@ -68,9 +74,15 @@ export class LocalDiskFileStore implements FileStore {
 
   /** Serve path for the local route: returns null when the file is missing. */
   async read(key: string): Promise<{ data: Uint8Array; contentType: string } | null> {
-    const target = this.resolve(key);
+    const target = this.resolve(this.toPath(key));
     try {
-      return { data: new Uint8Array(await readFile(target)), contentType: "application/octet-stream" };
+      let contentType = "application/octet-stream";
+      try {
+        contentType = (JSON.parse(await readFile(`${target}.meta`, "utf8")) as { contentType: string }).contentType;
+      } catch {
+        // missing/corrupt sidecar — fall back to the generic type
+      }
+      return { data: new Uint8Array(await readFile(target)), contentType };
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") {
         return null;
@@ -81,7 +93,7 @@ export class LocalDiskFileStore implements FileStore {
 
   private async exists(key: string): Promise<boolean> {
     try {
-      await stat(this.resolve(key));
+      await stat(this.resolve(this.toPath(key)));
       return true;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === "ENOENT") {
@@ -89,6 +101,11 @@ export class LocalDiskFileStore implements FileStore {
       }
       throw error;
     }
+  }
+
+  /** Accepts raw keys and full `/api/files/...` references. */
+  private toPath(key: string): string {
+    return key.startsWith("/api/files/") ? key.slice("/api/files/".length) : key;
   }
 
   /** Normalize and confine keys under the store root (no path traversal). */
@@ -126,6 +143,9 @@ export class VercelBlobFileStore implements FileStore {
   }
 
   async getUrl(key: string): Promise<string | null> {
+    if (/^https?:\/\//.test(key)) {
+      return key;
+    }
     try {
       return (await head(key)).url;
     } catch (error) {
